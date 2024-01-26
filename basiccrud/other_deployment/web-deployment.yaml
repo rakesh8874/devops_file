@@ -1,0 +1,33 @@
+apiVersion: apps/v1
+kind: Deployment
+
+metadata:
+  name: web-deployment
+
+spec:
+  replicas: 3
+  template:
+    metadata:
+      labels:
+        component: my-app
+    spec:
+      containers:
+        - name: my-app-container
+          image: rakesh8874/base1:latest
+          ports:
+          - containerPort: 80
+          env:
+            - name: POSTGRES_HOST
+              value: postgres-service
+            - name: POSTGRES_USER
+              value: postgres
+            - name: POSTGRES_PORT
+              value: '5432'
+            - name: POSTGRES_DB
+              value: my_app_db
+            - name: POSTGRES_PASSWORD
+              value: 'root'
+
+  selector:
+    matchLabels:
+      component: my-app

@@ -1,0 +1,51 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: myapp
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: myapp
+  template:
+    metadata:
+      labels:
+        app: myapp
+    spec:
+      containers:
+      - name: myapp
+        image: rakesh8874/basiccrudexample:latest
+        ports:
+        - containerPort: 8000
+        env:
+          - name: POSTGRES_HOST
+            value: postgres-service
+          - name: POSTGRES_PORT
+            value: '5432'
+          - name: POSTGRES_DB
+            value: basic_crud_db
+          - name: POSTGRES_USER
+            valueFrom:
+              secretKeyRef:
+                name: postgres-secret
+                key: postgres-root-username
+          - name: POSTGRES_PASSWORD
+            valueFrom:
+              secretKeyRef:
+                name: postgres-secret
+                key: postgres-root-password
+
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: myapp-service
+spec:
+  selector:
+    app: myapp
+  ports:
+    - protocol: "TCP"
+      port: 80
+      targetPort: 8000
+  type: NodePort
